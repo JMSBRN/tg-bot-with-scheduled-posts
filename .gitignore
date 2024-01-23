@@ -1,0 +1,20 @@
+# Dependency directories
+node_modules/
+
+# TypeScript build output
+dist/
+*.js
+*.js.map
+
+# Editor directories
+.vscode/
+.idea/
+
+# Environment configuration
+.env
+
+# macOS metadata
+.DS_Store
+
+# npm package lock
+package-lock.json
