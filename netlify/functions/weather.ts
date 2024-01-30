@@ -1,6 +1,3 @@
-// https://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=692558f436b41d827e09484ce4725e62
-
-
 import { Handler, HandlerContext, HandlerEvent } from '@netlify/functions';
 import fetch from 'node-fetch';
 
