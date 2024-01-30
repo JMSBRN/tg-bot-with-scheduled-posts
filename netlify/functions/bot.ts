@@ -2,34 +2,40 @@ import { config } from 'dotenv';
 import TelegramBot from 'node-telegram-bot-api';
 
 config();
+
 const token = process.env.TELEGRAM_BOT_TOKEN || '';
+const bot = new TelegramBot(token);
 
-// Create a bot that uses 'polling' to fetch new updates
-const bot = new TelegramBot(token, { polling: true });
+const webhookUrl = 'https://jmsbrn-tg-bot.netlify.app/.netlify/functions/bot';
 
-export async function handler(event: any, context: any) {
+bot.setWebHook(webhookUrl)
+  .then(() => {
+    console.log(`Webhook has been set to ${webhookUrl}`);
+  })
+  .catch((error) => {
+    console.error('Error setting up webhook:', error.message);
+  });
+
+exports.handler = async function(event: any, context: any) {
   try {
     const body = JSON.parse(event.body);
 
-    if (
-      body &&
-      body.message &&
-      body.message.text &&
-      body.message.text.toLowerCase().includes('/testcommand')
-    ) {
+    if (body.message) {
       const chatId = body.message.chat.id;
-      await bot.sendMessage(chatId, 'This is a response to the /testcommand!');
+      const messageText = 'Test';
+
+      await bot.sendMessage(chatId, messageText);
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Processed successfully' }),
+      body: JSON.stringify({ message: 'Message processed successfully' }),
     };
   } catch (error) {
-    console.error('Error handling Telegram message:', error);
+    console.error('Error processing Telegram update:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal Server Error' }),
+      body: JSON.stringify({ message: 'Internal server error' }),
     };
   }
-}
+};
