@@ -5,25 +5,28 @@ config();
 
 const token = process.env.TELEGRAM_BOT_TOKEN || '';
 const bot = new TelegramBot(token);
+const isBotWebhookExisted = bot.hasOpenWebHook();
 
-const webhookUrl = 'https://jmsbrn-tg-bot.netlify.app/.netlify/functions/bot';
+if (!isBotWebhookExisted) {
+  const webhookUrl = 'https://jmsbrn-tg-bot.netlify.app/.netlify/functions/bot';
 
-bot.setWebHook(webhookUrl)
-  .then(() => {
-    console.log(`Webhook has been set to ${webhookUrl}`);
-  })
-  .catch((error) => {
-    console.error('Error setting up webhook:', error.message);
-  });
+  bot
+    .setWebHook(webhookUrl)
+    .then(() => {
+      console.log(`Webhook has been set to ${webhookUrl}`);
+    })
+    .catch((error) => {
+      console.error('Error setting up webhook:', error.message);
+    });
+}
 
-exports.handler = async function(event: any, context: any) {
+exports.handler = async function (event: any, context: any) {
   try {
     const body = JSON.parse(event.body);
 
     if (body.message) {
       const chatId = body.message.chat.id;
       const messageText = 'Test';
-
       await bot.sendMessage(chatId, messageText);
     }
 
