@@ -29,6 +29,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@netlify/functions": "^2.5.1",
     "dotenv": "^16.4.1",
     "node-telegram-bot-api": "^0.64.0"
   }
