@@ -6,6 +6,23 @@
     <title>Document</title>
 </head>
 <body>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const button = document.getElementById('b123');
+            const div = document.getElementById('div');
+            button.addEventListener('click', async () => {
+                const res = await fetch('/.netlify/functions/weather')
+                .then(data => {
+                   data.json();
+                   console.log(data);
+                });
+            })
+            
+        })
+    </script>
     Hello World
+    <button id="b123">getWeather </button>
+    <div id="div"></div>
 </body>
 </html>

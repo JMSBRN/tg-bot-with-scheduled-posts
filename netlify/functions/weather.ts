@@ -7,6 +7,8 @@ import fetch from 'node-fetch';
 const apiToken = process.env.WEATHER_API_ID;
 const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=${apiToken}`;
 
+console.log(apiUrl);
+
 const handler: Handler = async (event: HandlerEvent, cxt: HandlerContext) => {
   try {
     const apiRes = await fetch(apiUrl);
