@@ -13,7 +13,14 @@
         const root = document.getElementById('root');
         button.addEventListener('click', async () => {
           try {
-            const res = await fetch('/.netlify/functions/weather');
+            const res = await fetch('/.netlify/functions/weather', {
+              method: 'POST',
+              headers: { 'Content-type':'application/json' },
+              body: JSON.stringify({
+                city: 'Rome',
+                country: 'it'
+              })
+            });
             const data = await res.text();
             root.innerHTML = data;
           } catch (error) {

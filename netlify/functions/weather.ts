@@ -4,12 +4,12 @@ const handler: Handler = async (event: HandlerEvent, cxt: HandlerContext) => {
   const apiToken = process.env.WEATHER_API_ID;
   const apiUrl = 'https://api.openweathermap.org/data/2.5/weather';
   const currentParams = JSON.stringify({ city: 'london', country: 'gb', mode: 'html', units: 'metric', lang: 'en' });
-  const { city, country, mode, units, lang } = JSON.parse(event.body || currentParams);
+  const { city, country } = JSON.parse(event.body || currentParams);
   const queryParams = new URLSearchParams({
     q: `${city},${country}`,
-    mode,
-    units,
-    lang,
+    mode: 'html',
+    units: 'metric',
+    lang: 'en',
     APPID: apiToken || '',
   });
 
