@@ -8,8 +8,8 @@ const handler: Handler = async (event: HandlerEvent, cxt: HandlerContext) => {
     const apiRes = await fetch(apiUrl);
 
     if (!apiRes.ok) {
-      const errorText = (await apiRes).text();
-      throw new Error(`Weather API request failed with status ${(await apiRes).status}. Error: ${errorText}`);
+      const errorText = apiRes.text();
+      throw new Error(`Weather API request failed with status ${apiRes.status}. Error: ${errorText}`);
     }
 
     const data = await apiRes.text();
