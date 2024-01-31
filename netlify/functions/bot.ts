@@ -1,6 +1,6 @@
 import { config } from 'dotenv';
 import TelegramBot from 'node-telegram-bot-api';
-import type { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
+import type { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
 
 config();
 
@@ -21,14 +21,22 @@ if (!isBotWebhookExisted) {
     });
 }
 
-  const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
+const handler: Handler = async (
+  event: HandlerEvent,
+  context: HandlerContext,
+) => {
   try {
     const body = JSON.parse(event.body || '');
 
     if (body.message) {
       const chatId = body.message.chat.id;
-      const messageText = 'Test';
-      await bot.sendMessage(chatId, messageText);
+      const firstName = body.from.first_name;
+      const htmlMessage = `
+      <b>Hello ${firstName}!</b>
+      <p>Welcome to your bot.</p>
+      <i>This message is formatted with HTML.</i>
+  `;
+      await bot.sendMessage(chatId, htmlMessage, { parse_mode: 'HTML' });
     }
 
     return {
@@ -43,4 +51,4 @@ if (!isBotWebhookExisted) {
     };
   }
 };
- export { handler };
+export { handler };
