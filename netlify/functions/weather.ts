@@ -1,5 +1,7 @@
 import { Handler, HandlerContext, HandlerEvent } from '@netlify/functions';
-import fetch from 'node-fetch';
+import { RequestInfo, RequestInit } from "node-fetch";
+
+const fetch = (url: RequestInfo, init?: RequestInit) =>  import("node-fetch").then(({ default: fetch }) => fetch(url, init));
 
 const apiToken = process.env.WEATHER_API_ID;
 const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=Berlin,de&mode=html&units=metric&lang=ru&&APPID=${apiToken}`;
