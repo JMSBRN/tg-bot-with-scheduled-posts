@@ -32,7 +32,6 @@ const handler: Handler = async (
       const chatId = body.message.chat.id;
       const htmlMessage = `
       <b>Hello World!</b>
-      <p>Welcome to your bot.</p>
       <i>This message is formatted with HTML.</i>
   `;
       await bot.sendMessage(chatId, htmlMessage, { parse_mode: 'HTML' });
