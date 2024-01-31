@@ -1,15 +1,26 @@
 import { Handler, HandlerContext, HandlerEvent } from '@netlify/functions';
 
-const apiToken = process.env.WEATHER_API_ID;
-const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=Berlin,de&mode=html&units=metric&lang=ru&&APPID=${apiToken}`;
-
 const handler: Handler = async (event: HandlerEvent, cxt: HandlerContext) => {
+  const apiToken = process.env.WEATHER_API_ID;
+  const apiUrl = 'https://api.openweathermap.org/data/2.5/weather';
+  const currentParams = JSON.stringify({ city: 'london', country: 'gb', mode: 'html', units: 'metric', lang: 'en' });
+  const { city, country, mode, units, lang } = JSON.parse(event.body || currentParams);
+  const queryParams = new URLSearchParams({
+    q: `${city},${country}`,
+    mode,
+    units,
+    lang,
+    APPID: apiToken || '',
+  });
+
   try {
-    const apiRes = await fetch(apiUrl);
+    const apiRes = await fetch(`${apiUrl}?${queryParams}`);
 
     if (!apiRes.ok) {
       const errorText = apiRes.text();
-      throw new Error(`Weather API request failed with status ${apiRes.status}. Error: ${errorText}`);
+      throw new Error(
+        `Weather API request failed with status ${apiRes.status}. Error: ${errorText}`,
+      );
     }
 
     const data = await apiRes.text();
@@ -28,4 +39,3 @@ const handler: Handler = async (event: HandlerEvent, cxt: HandlerContext) => {
 };
 
 export { handler };
-
