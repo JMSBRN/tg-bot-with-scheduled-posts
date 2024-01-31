@@ -5,15 +5,14 @@ const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=Berlin,de&mode
 
 const handler: Handler = async (event: HandlerEvent, cxt: HandlerContext) => {
   try {
-    const fetch = import('node-fetch').then(({ default: fetch }) => fetch);
-    const apiRes = (await fetch)(apiUrl);
+    const apiRes = await fetch(apiUrl);
 
-    if (!(await apiRes).ok) {
+    if (!apiRes.ok) {
       const errorText = (await apiRes).text();
       throw new Error(`Weather API request failed with status ${(await apiRes).status}. Error: ${errorText}`);
     }
 
-    const data = await (await apiRes).text();
+    const data = await apiRes.text();
     return {
       statusCode: 200,
       headers: { 'Content-type': 'text/html' },
