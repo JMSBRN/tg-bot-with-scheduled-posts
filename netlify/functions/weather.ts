@@ -2,7 +2,7 @@ import { Handler, HandlerContext, HandlerEvent } from '@netlify/functions';
 import fetch from 'node-fetch';
 
 const apiToken = process.env.WEATHER_API_ID;
-const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=${apiToken}`;
+const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=Berlin,de&mode=html&units=metric&lang=ru&&APPID=${apiToken}`;
 
 console.log(apiUrl);
 
@@ -14,10 +14,11 @@ const handler: Handler = async (event: HandlerEvent, cxt: HandlerContext) => {
       throw new Error(`Weather API request failed with status ${apiRes.status}`);
     }
 
-    const data = await apiRes.json();
+    const data = await apiRes.text();
     return {
       statusCode: 200,
-      body: JSON.stringify(data),
+      headers: { 'Content-type': 'text/html' },
+      body: data,
     };
   } catch (error) {
     console.error('Error fetching weather data:', error);
