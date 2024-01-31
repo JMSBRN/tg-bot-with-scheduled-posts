@@ -30,9 +30,8 @@ const handler: Handler = async (
 
     if (body.message) {
       const chatId = body.message.chat.id;
-      const firstName = body.from.first_name;
       const htmlMessage = `
-      <b>Hello ${firstName}!</b>
+      <b>Hello World!</b>
       <p>Welcome to your bot.</p>
       <i>This message is formatted with HTML.</i>
   `;
