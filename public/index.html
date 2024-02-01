@@ -10,13 +10,14 @@
     <title>Weather App</title>
     <style>
       .root {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 10px;
-        grid-template-rows: auto;
-        align-items: center;
+        padding: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        box-sizing: border-box;
       }
       .weather-cart {
+        position: relative;
         width: 140px;
         height: auto;
         min-height: 40px;
@@ -31,6 +32,27 @@
       button {
         margin-bottom: 5px;
       }
+      .loader {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        border: 2px solid #9b9b9b;
+        border-top: 2px solid #ffffff;
+        border-radius: 50%;
+        width: 15px;
+        height: 15px;
+        animation: spin 1s linear infinite;
+        opacity: 0.8;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
   <body>
@@ -38,21 +60,42 @@
       document.addEventListener('DOMContentLoaded', async () => {
         const root = document.getElementById('root');
         const towns = await getTowns();
+        const loader = createElementWithClassAndId('div', 'loader', 'loader');
+        loader.classList.add('loader');
+        loader.setAttribute('id', 'loader');
 
         towns.forEach((town, index) => {
-          const cartContainer = document.createElement('div');
-          cartContainer.classList.add('weather-cart');
+          const cartContainer = createElementWithClassAndId(
+            'div',
+            'weather-cart',
+            'weather-cart',
+          );
           const button = document.createElement('button');
+          button.style.cursor = 'pointer';
           button.textContent = `${town.city}, ${town.country}`;
+
           button.addEventListener('click', async () => {
+            cartContainer.append(loader);
             const data = await getWeather(town.city, town.country);
-            if(data) {
+            if (data.length) {
               const weatherData = document.createElement('div');
+              weatherData.setAttribute('id', 'weather-data');
+              const loader = document.getElementById('loader');
+              if (loader) loader.style.visibility = 'hidden';
               weatherData.innerHTML = data;
-              if(cartContainer.childNodes.length <= 1) {
+              if (cartContainer.childNodes.length <= 2) {
                 cartContainer.append(weatherData);
+                const button = cartContainer.querySelector('button');
+                if (button) {
+                  button.textContent = 'Close';
+                  button.style.opacity = '0.2';
+                }
               } else {
-                cartContainer.removeChild(cartContainer.lastChild);
+                const button = cartContainer.querySelector('button');
+                if (button) {
+                  button.textContent = `${town.city}, ${town.country}`;
+                  button.style.opacity = '1';
+                }
               }
             }
           });
@@ -60,6 +103,17 @@
           root.appendChild(cartContainer);
         });
       });
+
+      function createElementWithClassAndId(
+        type = 'div',
+        className = 'className',
+        id = 'idDefault',
+      ) {
+        const element = document.createElement(type);
+        element.className = className;
+        element.id = id;
+        return element;
+      }
 
       async function getTowns() {
         const data = await (
@@ -80,7 +134,7 @@
         }
       }
     </script>
-    <div style="margin: 0 auto; width: 90%">
+    <div style="margin: 0 auto; min-width: 90%; text-align: center">
       <div id="root" class="root"></div>
     </div>
   </body>
