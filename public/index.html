@@ -3,33 +3,85 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>Document</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="upgrade-insecure-requests"
+    />
+    <title>Weather App</title>
+    <style>
+      .root {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        grid-template-rows: auto;
+        align-items: center;
+      }
+      .weather-cart {
+        width: 140px;
+        height: auto;
+        min-height: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin: 10px;
+      }
+
+      button {
+        margin-bottom: 5px;
+      }
+    </style>
   </head>
   <body>
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const button = document.getElementById('b123');
+      document.addEventListener('DOMContentLoaded', async () => {
         const root = document.getElementById('root');
-        button.addEventListener('click', async () => {
-          try {
-            const res = await fetch('/.netlify/functions/weather', {
-              method: 'POST',
-              headers: { 'Content-type':'application/json' },
-              body: JSON.stringify({
-                city: 'Rome',
-                country: 'it'
-              })
-            });
-            const data = await res.text();
-            root.innerHTML = data;
-          } catch (error) {
-            console.error('Error fetching data:', error);
-          }
+        const towns = await getTowns();
+
+        towns.forEach((town, index) => {
+          const cartContainer = document.createElement('div');
+          cartContainer.classList.add('weather-cart');
+          const button = document.createElement('button');
+          button.textContent = `${town.city}, ${town.country}`;
+          button.addEventListener('click', async () => {
+            const data = await getWeather(town.city, town.country);
+            if(data) {
+              const weatherData = document.createElement('div');
+              weatherData.innerHTML = data;
+              if(cartContainer.childNodes.length <= 1) {
+                cartContainer.append(weatherData);
+              } else {
+                cartContainer.removeChild(cartContainer.lastChild);
+              }
+            }
+          });
+          cartContainer.appendChild(button);
+          root.appendChild(cartContainer);
         });
       });
+
+      async function getTowns() {
+        const data = await (
+          await fetch('/.netlify/functions/getFamousTowns')
+        ).json();
+        return data.towns;
+      }
+      async function getWeather(city, country) {
+        try {
+          const res = await fetch('/.netlify/functions/weather', {
+            method: 'POST',
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify({ city, country }),
+          });
+          return await res.text();
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      }
     </script>
-    <button id="b123">getWeather</button>
-    <div id="root"></div>
+    <div style="margin: 0 auto; width: 90%">
+      <div id="root" class="root"></div>
+    </div>
   </body>
 </html>
