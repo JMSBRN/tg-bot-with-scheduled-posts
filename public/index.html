@@ -20,18 +20,25 @@
         position: relative;
         width: 140px;
         height: auto;
-        min-height: 40px;
+        min-height: 30px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        border: 1px solid #ccc;
+        border: 0.5px solid #cfcfcf;
         padding: 10px;
         margin: 10px;
       }
-
-      button {
-        margin-bottom: 5px;
+      .town-btn {
+        margin: 5px 0;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        &:hover {
+          background-color: rgb(104, 104, 104);
+          color: white;
+        }
       }
+
       .loader {
         position: absolute;
         top: 10px;
@@ -60,42 +67,49 @@
       document.addEventListener('DOMContentLoaded', async () => {
         const root = document.getElementById('root');
         const towns = await getTowns();
-        const loader = createElementWithClassAndId('div', 'loader', 'loader');
-        loader.classList.add('loader');
-        loader.setAttribute('id', 'loader');
 
         towns.forEach((town, index) => {
+          const loader = createElementWithClassAndId('div', 'loader', 'loader');
+          const weatherData = createElementWithClassAndId(
+            'div',
+            'weather-data',
+            'weather-data',
+          );
           const cartContainer = createElementWithClassAndId(
             'div',
             'weather-cart',
             'weather-cart',
           );
-          const button = document.createElement('button');
-          button.style.cursor = 'pointer';
+          const button = createElementWithClassAndId(
+            'button',
+            'town-btn',
+            'town-btn',
+          );
           button.textContent = `${town.city}, ${town.country}`;
-
           button.addEventListener('click', async () => {
             cartContainer.append(loader);
             const data = await getWeather(town.city, town.country);
-            if (data.length) {
-              const weatherData = document.createElement('div');
-              weatherData.setAttribute('id', 'weather-data');
-              const loader = document.getElementById('loader');
-              if (loader) loader.style.visibility = 'hidden';
-              weatherData.innerHTML = data;
-              if (cartContainer.childNodes.length <= 2) {
+            if (!cartContainer.querySelector('#weather-data')) {
+              if (data.length) {
+                if (loader) {
+                  loader.style.visibility = 'hidden';
+                }
+                weatherData.innerHTML = data;
                 cartContainer.append(weatherData);
-                const button = cartContainer.querySelector('button');
+                const button = cartContainer.querySelector('#town-btn');
                 if (button) {
                   button.textContent = 'Close';
-                  button.style.opacity = '0.2';
+                  button.style.opacity = '0.3';
                 }
-              } else {
-                const button = cartContainer.querySelector('button');
-                if (button) {
-                  button.textContent = `${town.city}, ${town.country}`;
-                  button.style.opacity = '1';
-                }
+              }
+            } else {
+              const weatherDataAsChild =
+                cartContainer.querySelector('#weather-data');
+              const button = cartContainer.querySelector('#town-btn');
+              button.textContent = `${town.city}, ${town.country}`;
+              button.style.opacity = '1';
+              if (weatherDataAsChild) {
+                cartContainer.removeChild(weatherDataAsChild);
               }
             }
           });
@@ -116,11 +130,27 @@
       }
 
       async function getTowns() {
-        const data = await (
-          await fetch('/.netlify/functions/getFamousTowns')
-        ).json();
-        return data.towns;
+        var arr = [{ city: '', country: '' }];
+        try {
+          const response = await fetch('/.netlify/functions/getFamousTowns');
+
+          if (!response.ok) {
+            throw new Error(`Failed to fetch towns: ${response.status}`);
+          }
+
+          const data = await response.json();
+
+          if (!data || !data.towns || !Array.isArray(data.towns)) {
+            throw new Error('Invalid data format received');
+          }
+
+          return arr.concat(data.towns).slice(1);
+        } catch (error) {
+          console.error('Error fetching towns:', error.message);
+          throw error;
+        }
       }
+
       async function getWeather(city, country) {
         try {
           const res = await fetch('/.netlify/functions/weather', {
