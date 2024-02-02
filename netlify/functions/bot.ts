@@ -1,12 +1,17 @@
 import { config } from 'dotenv';
 import TelegramBot from 'node-telegram-bot-api';
 import type { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
+import { handleWeatherCommand } from '../../src/utils/botUtils';
 
 config();
 
 const token = process.env.TELEGRAM_BOT_TOKEN || '';
 const bot = new TelegramBot(token);
 const isBotWebhookExisted = bot.hasOpenWebHook();
+
+bot.onText(/\/weather/i, (msg) => {
+  handleWeatherCommand(bot, msg);
+});
 
 if (!isBotWebhookExisted) {
   const webhookUrl = 'https://jmsbrn-tg-bot.netlify.app/.netlify/functions/bot';
@@ -27,12 +32,11 @@ const handler: Handler = async (
 ) => {
   try {
     const body = JSON.parse(event.body || '');
-
     if (body.message) {
       const chatId = body.message.chat.id;
       const htmlMessage = `
       <b>Hello World!</b>
-      <i>This message is formatted with HTML.</i>
+      <i>This mertetreterterterssage is formatted with HTML.</i>
   `;
       await bot.sendMessage(chatId, htmlMessage, { parse_mode: 'HTML' });
     }
