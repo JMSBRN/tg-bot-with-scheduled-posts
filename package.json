@@ -8,7 +8,7 @@
     "lint": "eslint . --ext .ts",
     "build": "tsc",
     "start": "ts-node ./src/index.ts",
-    "dev": "nodemon index.ts"
+    "dev": "nodemon ./src/index.ts"
   },
   "keywords": [],
   "author": "",
