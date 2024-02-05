@@ -1,7 +1,8 @@
 import TelegramBot from "node-telegram-bot-api";
+import { TelegramMessage } from "../interfaces/botInterfacses";
 
-export const handleWeatherCommand = async (bot: TelegramBot, msg: TelegramBot.Message) => {
-    const chatId = msg.chat.id;
+export const handleWeatherCommand = async (bot: TelegramBot, msg: TelegramMessage) => {
+    const chatId = msg.message.chat.id;
     bot.sendMessage(chatId, '🏝️✈️🍹☀️🏖️', {
       reply_markup: {
         inline_keyboard: [

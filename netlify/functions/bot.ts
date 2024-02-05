@@ -2,6 +2,7 @@ import { config } from 'dotenv';
 import TelegramBot from 'node-telegram-bot-api';
 import type { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
 import { handleWeatherCommand } from '../../src/utils/botUtils';
+import { TelegramMessage } from '../../src/interfaces/botInterfacses';
 
 config();
 
@@ -29,24 +30,15 @@ const handler: Handler = async (
 ) => {
   const regExpWeatheCommand:RegExp = /\/weather/i;
   try {
-    const body = JSON.parse(event.body || '');
-    if (body.message) {
-      const chatId = body.message.chat.id;
-      const htmlMessage = `
-      <b>Hello World!</b>
-      <i>This message is formatted with HTML.</i>
-      `;
-      await bot.sendMessage(chatId, htmlMessage, { parse_mode: 'HTML' });
-    } else if (regExpWeatheCommand.test(body.message)) {
-      bot.onText(/\/weather/i, (msg) => {
-        handleWeatherCommand(bot, msg);
-      });
-    }
-
+    const body = JSON.parse(event.body || '{}') as TelegramMessage;
+    if (regExpWeatheCommand.test(body.message.text)) {
+       await handleWeatherCommand(bot, body)
+      }
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Message processed successfully' }),
+      body: JSON.stringify({ message: 'fok' }),
     };
+
   } catch (error) {
     console.error('Error processing Telegram update:', error);
     return {
