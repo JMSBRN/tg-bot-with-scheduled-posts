@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 import TelegramBot from 'node-telegram-bot-api';
 import type { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
-import { handleWeatherCommand } from '../../src/utils/botUtils';
+import { handleCommand } from '../../src/utils/bot-utils/botUtils';
 import { TelegramMessage } from '../../src/interfaces/botInterfacses';
 
 config();
@@ -9,7 +9,6 @@ config();
 const token = process.env.TELEGRAM_BOT_TOKEN || '';
 const bot = new TelegramBot(token);
 const isBotWebhookExisted = bot.hasOpenWebHook();
-
 
 if (!isBotWebhookExisted) {
   const webhookUrl = 'https://jmsbrn-tg-bot.netlify.app/.netlify/functions/bot';
@@ -28,17 +27,13 @@ const handler: Handler = async (
   event: HandlerEvent,
   context: HandlerContext,
 ) => {
-  const regExpWeatheCommand:RegExp = /\/weather/i;
   try {
     const body = JSON.parse(event.body || '{}') as TelegramMessage;
-    if (regExpWeatheCommand.test(body.message.text)) {
-       await handleWeatherCommand(bot, body)
-      }
+    await handleCommand(body.message.text, bot, body);
     return {
       statusCode: 200,
       body: JSON.stringify({ message: 'fok' }),
     };
-
   } catch (error) {
     console.error('Error processing Telegram update:', error);
     return {
