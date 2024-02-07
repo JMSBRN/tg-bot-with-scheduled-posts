@@ -1,52 +1,70 @@
-import { Handler, HandlerContext, HandlerEvent } from '@netlify/functions';
 import { google } from 'googleapis';
 import { config } from 'dotenv';
-import { credentials } from '../../src/utils/google-calendar/credentials';
+import { HandlerContext, HandlerEvent } from '@netlify/functions';
 
 config();
 
-const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
-  const calendarId = process.env.CALENDAR_ID;
+exports.handler = async (event:HandlerEvent, context: HandlerContext) => {
+    const oauth2Client = new google.auth.OAuth2(
+        process.env.CLIENT_ID,
+        process.env.CLIENT_SECRET,
+        process.env.REDIRECT_URL_2
+    );
 
-  if (!calendarId) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'CALENDAR_ID environment variable is not set.' }),
-    };
-  }
+    // Define scopes for Google Calendar API
+    const scopes = [
+        'https://www.googleapis.com/auth/calendar.readonly',
+        'https://www.googleapis.com/auth/calendar'
+    ];
 
-  try {
-    const auth = new google.auth.GoogleAuth({
-      credentials: credentials.web,
-      scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
+    // Generate authentication URL
+    const authUrl = oauth2Client.generateAuthUrl({
+        access_type: 'offline', // 'offline' to get refresh token
+        scope: scopes
     });
 
-    const calendar = google.calendar({
-      version: 'v3',
-      auth: auth,
-    });
+    // Check if the request path matches the redirect URL
+    if (event.queryStringParameters && event.queryStringParameters.code) {
+        const code = event.queryStringParameters.code;
+        try {
+            const { tokens } = await oauth2Client.getToken(code);
+            // Set tokens to OAuth2 client
+            if (tokens.access_token) {
+                oauth2Client.setCredentials({
+                    access_token: tokens.access_token
+                });
+            }
 
-    const { data } = await calendar.events.list({
-      calendarId: calendarId,
-      timeMin: new Date().toISOString(),
-      maxResults: 10,
-      singleEvents: true,
-      orderBy: 'startTime',
-    });
+            const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
-    return {
-      statusCode: 200,
-      headers: { 'Content-type': 'application/json' },
-      body: JSON.stringify({ data }),
-    };
-  } catch (error) {
-    console.error('Error fetching calendar events:', error);
+            const response = await calendar.events.list({
+                calendarId: process.env.CALENDAR_ID,
+                timeMin: new Date().toISOString(),
+                maxResults: 10,
+                singleEvents: true,
+                orderBy: 'startTime'
+            });
 
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: (error as Error).message }),
-    };
-  }
-};
-
-export { handler };
+            const events = response.data.items;
+            return {
+                statusCode: 200,
+                body: JSON.stringify(events)
+            };
+        } catch (err) {
+            console.error('Error:', err);
+            return {
+                statusCode: 500,
+                body: 'Error fetching events. Please try again.'
+            };
+        }
+    } else {
+        // Redirect user to authentication URL
+        return {
+            statusCode: 301,
+            headers: {
+                'Location': authUrl
+            },
+            body: ''
+        };
+    }
+}
