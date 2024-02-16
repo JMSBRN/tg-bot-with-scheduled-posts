@@ -1,5 +1,5 @@
 import { Handler, HandlerContext, HandlerEvent } from '@netlify/functions';
-import townsData from '../../src/famous-towns.json';
+import townsData from '../../famous-towns.json';
 
 const handler: Handler = async (
   event: HandlerEvent,
