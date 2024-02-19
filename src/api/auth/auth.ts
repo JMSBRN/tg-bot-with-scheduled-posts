@@ -1,27 +1,17 @@
 import { google, Auth } from 'googleapis';
-import { readFile } from 'fs/promises';
-import { CredentialsForClient, credentials } from './credentials';
 
 
-
-
-async function readCredentialsFile(path:string): Promise<CredentialsForClient> {
-    try {
-      const data = await readFile(path, 'utf8');
-      return JSON.parse(data);
-    } catch (error) {
-      console.error('Error reading credentials file:', error);
-      return undefined;
-    }
-  }
-
-async function getAuthenticatedClient(
-    credentials: CredentialsForClient
-     ): Promise<Auth.AuthClient | Auth.Compute> {
+async function getAuthenticatedClient(): Promise<
+  Auth.AuthClient | Auth.Compute | Auth.OAuth2Client
+> {
+  const ce = process.env.CLIENT_EMAIL;
+  const pk = process.env.PRIVATE_KEY;
   try {
-
     const authClient = new google.auth.GoogleAuth({
-      credentials,
+      credentials: {
+        client_email: ce,
+        private_key: pk?.replace(/\\n/g, '\n'),
+      },
       scopes: ['https://www.googleapis.com/auth/calendar'],
     });
 
@@ -31,14 +21,4 @@ async function getAuthenticatedClient(
   }
 }
 
-async function rootClient(): Promise<Auth.AuthClient | Auth.Compute> {
-    try {
-        return await getAuthenticatedClient(credentials);
-    } catch (error) {
-        throw error;
-    }
-}
-
-export {
-    rootClient
-}
+export { getAuthenticatedClient };
