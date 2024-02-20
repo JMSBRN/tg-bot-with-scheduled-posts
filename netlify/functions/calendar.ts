@@ -7,7 +7,7 @@ exports.handler = async function (event: HandlerEvent, context: HandlerContext):
   try {
     switch (operation) {
       case 'getEvents':
-        const events = await getEvents(payload);
+        const events = await getEvents(payload, calendarId);
         return {
           statusCode: 200,
           body: JSON.stringify(events)

@@ -9,15 +9,13 @@ const getCalendar = async (): Promise<calendar_v3.Calendar> => {
 };
 
 interface GetEventsOptions {
-    calendarId?: string;
     maxResults?: number;
     daysBefore?: number;
     daysAfter?: number;
 }
 
-const getEvents = async (options: GetEventsOptions = {}): Promise<calendar_v3.Schema$Event[] | undefined> => {
+const getEvents = async (options: GetEventsOptions = {}, calendarId: string ='primary'): Promise<calendar_v3.Schema$Event[] | undefined> => {
     const {
-        calendarId = "primary",
         maxResults = 1000,
         daysBefore = 0,
         daysAfter = 365
