@@ -1,35 +1,45 @@
-import { getAuthenticatedClient } from '../../src/api/auth/auth';
-import { google, Auth } from 'googleapis';
+import { HandlerContext, HandlerEvent, HandlerResponse } from '@netlify/functions';
+import { deleteEvent, getEvents, insertEvent, updateEvent } from '../../src/api/google-calendar/calendarApiUtils';
 
-const handler = async () => {
-  const rootClient = (await getAuthenticatedClient()) as Auth.OAuth2Client;
+exports.handler = async function (event: HandlerEvent, context: HandlerContext): Promise<HandlerResponse> {
+  const { operation, payload } = JSON.parse(event.body || '') as { operation: string, payload: any };
+  const calendarId = process.env.CALENDAR_ID || 'primary';
   try {
-    const calendar = google.calendar({ version: 'v3', auth: rootClient });
-    const res = await calendar.events.list({
-      calendarId: 'zakhavai@gmail.com',
-      maxResults: 1,
-      singleEvents: true,
-      orderBy: 'startTime',
-    });
-
-    const events = res.data.items;
-
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ events: events }),
-    };
+    switch (operation) {
+      case 'getEvents':
+        const events = await getEvents(payload);
+        return {
+          statusCode: 200,
+          body: JSON.stringify(events)
+        };
+      case 'deleteEvent':
+        const deleteRes = await deleteEvent(payload.eventId, calendarId);
+        return {
+          statusCode: 200,
+          body: JSON.stringify(deleteRes)
+        };
+      case 'insertEvent':
+        const insertedEvent = await insertEvent(payload.event, calendarId);
+        return {
+          statusCode: 200,
+          body: JSON.stringify(insertedEvent)
+        };
+      case 'updateEvent':
+        const updatedEvent = await updateEvent(payload.eventId, payload.updatedEvent, calendarId, payload.options);
+        return {
+          statusCode: 200,
+          body: JSON.stringify(updatedEvent)
+        };
+      default:
+        return {
+          statusCode: 400,
+          body: 'Invalid operation'
+        };
+    }
   } catch (error) {
-    console.error(error);
     return {
       statusCode: 500,
-      body: JSON.stringify({
-        error: `Failed to retrieve events with error ${error}`,
-      }),
+      body: JSON.stringify({ error: `${operation} - ${(error as Error).message}` })
     };
   }
 };
-
-export { handler };
