@@ -1,6 +1,7 @@
 import {Auth, calendar_v3, google } from "googleapis";
 import { getAuthenticatedClient } from "../auth/auth";
 import { MethodOptions } from "googleapis/build/src/apis/calendar";
+import { GetEventsOptions } from "./interfaces";
 
 
 const getCalendar = async (): Promise<calendar_v3.Calendar> => {
@@ -8,11 +9,6 @@ const getCalendar = async (): Promise<calendar_v3.Calendar> => {
     return google.calendar({ version: 'v3', auth: authenticatedClient });
 };
 
-interface GetEventsOptions {
-    maxResults?: number;
-    daysBefore?: number;
-    daysAfter?: number;
-}
 
 const getEvents = async (options: GetEventsOptions = {}, calendarId: string ='primary'): Promise<calendar_v3.Schema$Event[] | undefined> => {
     const {
