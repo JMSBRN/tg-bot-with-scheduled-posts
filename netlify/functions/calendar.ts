@@ -6,7 +6,7 @@ exports.handler = async function (event: HandlerEvent, context: HandlerContext):
   if (event.httpMethod !== 'POST' || !event.body) {
     return {
       statusCode: 400,
-      body: 'Invalid request httpMethod must be POST with body"'
+      body: 'Invalid request http method must be POST, with body"'
     };
   }
   
