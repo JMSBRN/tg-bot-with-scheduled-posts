@@ -1,7 +1,6 @@
 import { HandlerContext, HandlerEvent, HandlerResponse } from '@netlify/functions';
 import { deleteEvent, getEvents, insertEvent, updateEvent } from '../../src/api/google-calendar/calendarApiUtils';
 
-type OperationType = 'getEvents' | 'deleteEvent' | 'insertEvent' | 'updateEvent';
 exports.handler = async function (event: HandlerEvent, context: HandlerContext): Promise<HandlerResponse> {
   if (event.httpMethod !== 'POST' || !event.body) {
     return {
@@ -10,14 +9,7 @@ exports.handler = async function (event: HandlerEvent, context: HandlerContext):
     };
   }
   
-  const { operation, payload } = JSON.parse(event.body) as { operation: OperationType, payload: any };
-  
-  if (!(operation in ['getEvents', 'deleteEvent', 'insertEvent', 'updateEvent'])) {
-    return {
-      statusCode: 400,
-      body: 'Invalid operation'
-    };
-  }
+  const { operation, payload } = JSON.parse(event.body) as { operation: string, payload: any };
   const calendarId = process.env.CALENDAR_ID || 'primary';
   try {
     switch (operation) {
