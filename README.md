@@ -8,6 +8,10 @@ added apies: weather, google calendar
 in develop mode: {
    calendar implement with no redirect url, server to server.
    deploy: https://jmsbrn-tg-bot.netlify.app/calendar
+   
+ 1. ### created function calendar with posts methods as experiment
 
 }
+
+
 
