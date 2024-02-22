@@ -4,7 +4,7 @@ import { handleStartCommand } from './bot-commands/startCommand';
 import { handleHelpCommand } from './bot-commands/helpCommand';
 import { handleWeatherCommand } from './bot-commands/weatherCommand';
 
-export const handleCommand = async (text: string, bot:TelegramBot, msg:TelegramMessage) => {
+export const handleBotCommands = async (text: string, bot:TelegramBot, msg:TelegramMessage) => {
   const regExpWeatherCommand: RegExp = /\/weather/i;
   const regExpStartCommand: RegExp = /\/start/i;
   const regExpHelpCommand: RegExp = /\/help/i;
