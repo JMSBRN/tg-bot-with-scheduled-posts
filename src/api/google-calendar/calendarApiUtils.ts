@@ -15,7 +15,7 @@ const getEvents = async (options: GetEventsOptions | undefined, calendarId: stri
         maxResults = 1000,
         daysBefore = 0,
         daysAfter = 365
-    } = options || {};
+    } = options || {} as GetEventsOptions;
 
     const calendar: calendar_v3.Calendar = await getCalendar();
     const currentTime: number = new Date().getTime();
