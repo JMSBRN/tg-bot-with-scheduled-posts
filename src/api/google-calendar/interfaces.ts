@@ -7,7 +7,7 @@ export interface GetEventsOptions {
     daysAfter?: number;
 }
 export interface CalendarCallsBodyPayload {
-    getEventsOPtions: GetEventsOptions;
+    getEventsOPtions?: GetEventsOptions;
     eventId?: string;
     event?: calendar_v3.Schema$Event;
     updatedEvent?: Partial<calendar_v3.Schema$Event>;
