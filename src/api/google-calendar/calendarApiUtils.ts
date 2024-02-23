@@ -3,6 +3,16 @@ import { getAuthenticatedClient } from "../auth/auth";
 import { MethodOptions } from "googleapis/build/src/apis/calendar";
 import { GetEventsOptions } from "./interfaces";
 
+function convertParamsToObject(url: string): { [key: string]: number } {
+    const searchParams = new URLSearchParams(url);
+    const paramsObject: { [key: string]: number } = {};
+  
+    for (const [key, value] of searchParams.entries()) {
+      paramsObject[key] = Number(value);
+    }
+  
+    return paramsObject;
+  }
 
 const getCalendar = async (): Promise<calendar_v3.Calendar> => {
     const authenticatedClient = (await getAuthenticatedClient()) as Auth.OAuth2Client;
@@ -10,12 +20,11 @@ const getCalendar = async (): Promise<calendar_v3.Calendar> => {
 };
 
 
-const getEvents = async (options: GetEventsOptions | undefined, calendarId: string ='primary'): Promise<calendar_v3.Schema$Event[] | undefined> => {
-    const {
-        maxResults = 1000,
-        daysBefore = 0,
-        daysAfter = 365
-    } = options || {} as GetEventsOptions;
+const getEvents = async (options: URLSearchParams | undefined, calendarId: string ='primary'): Promise<calendar_v3.Schema$Event[] | undefined> => {
+    let { maxResults, daysBefore, daysAfter } = convertParamsToObject(options!.toString());
+    maxResults=100;
+    daysBefore=0;
+    daysAfter=1000;
 
     const calendar: calendar_v3.Calendar = await getCalendar();
     const currentTime: number = new Date().getTime();

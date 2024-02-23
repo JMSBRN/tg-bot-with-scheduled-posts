@@ -1,38 +1,33 @@
 import { HandlerContext, HandlerEvent, HandlerResponse } from '@netlify/functions';
 import { deleteEvent, getEvents, insertEvent, updateEvent } from '../../src/api/google-calendar/calendarApiUtils';
-import { CalendarCallsBody, CalendarCallsBodyPayload } from '../../src/api/google-calendar/interfaces';
+import { CalendarCallsBody, GetEventsOptions } from '../../src/api/google-calendar/interfaces';
 
 exports.handler = async function (event: HandlerEvent, context: HandlerContext): Promise<HandlerResponse> {
-  if (event.httpMethod !== 'POST' || !event.body) {
-    return {
-      statusCode: 400,
-      body: 'Invalid request http method must be POST, with body"'
-    };
-  }
-  
-  const { operation, payload, calendarId, getEventsOPtions } = JSON.parse(event.body) as CalendarCallsBody;
+  const httpMethod = event.httpMethod;
+  const { payload, calendarId } = JSON.parse(event.body!) as CalendarCallsBody;
   const calId = calendarId || process.env.CALENDAR_ID || 'primary';
+  const params = new URLSearchParams(event.rawUrl);
   try {
-    switch (operation) {
-      case 'getEvents':
-        const events = await getEvents(getEventsOPtions, calId);
+    switch (httpMethod) {
+      case 'GET':
+        const events = await getEvents(params, calId);
         return {
           statusCode: 200,
           body: JSON.stringify(events)
         };
-      case 'deleteEvent':
+      case 'DELETE':
         const deleteRes = await deleteEvent(payload?.eventId!, calId);
         return {
-          statusCode: 200,
-          body: JSON.stringify(deleteRes)
+          statusCode: 204,
+          body: ''
         };
-      case 'insertEvent':
+      case 'POST':
         const insertedEvent = await insertEvent(payload?.event!, calId);
         return {
-          statusCode: 200,
+          statusCode: 201,
           body: JSON.stringify(insertedEvent)
         };
-      case 'updateEvent':
+      case 'PUT':
         const updatedEvent = await updateEvent(payload?.eventId!, payload?.updatedEvent!, calId, payload?.options);
         return {
           statusCode: 200,
@@ -40,14 +35,14 @@ exports.handler = async function (event: HandlerEvent, context: HandlerContext):
         };
       default:
         return {
-          statusCode: 400,
-          body: 'Invalid operation '
+          statusCode: 405,
+          body: 'Invalid method'
         };
     }
   } catch (error) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: `${operation} - ${(error as Error).message}` })
+      body: JSON.stringify({ error: `method: ﹩{httpMethod} - ﹩{(error as Error).message}` })
     };
   }
 };
