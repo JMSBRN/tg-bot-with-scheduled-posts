@@ -26,7 +26,7 @@ const getEvents = async (options: GetEventsOptions = {}, calendarId: string ='pr
             calendarId,
             timeMin: minTime,
             timeMax: maxTime,
-            maxResults,
+            maxResults: maxResults || 1,
             singleEvents: true,
             orderBy: 'startTime',
         });
