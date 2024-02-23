@@ -10,12 +10,12 @@ exports.handler = async function (event: HandlerEvent, context: HandlerContext):
     };
   }
   
-  const { operation, payload, calendarId } = JSON.parse(event.body) as CalendarCallsBody;
+  const { operation, payload, calendarId, getEventsOPtions } = JSON.parse(event.body) as CalendarCallsBody;
   const calId = calendarId || process.env.CALENDAR_ID || 'primary';
   try {
     switch (operation) {
       case 'getEvents':
-        const events = await getEvents(payload.getEventsOPtions, calId);
+        const events = await getEvents(getEventsOPtions, calId);
         return {
           statusCode: 200,
           body: JSON.stringify(events)
