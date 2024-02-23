@@ -8,7 +8,6 @@ exports.handler = async function (event: HandlerEvent, context: HandlerContext):
   // const calId = calendarId || process.env.CALENDAR_ID || 'primary';
   // const qwuery = event.rawQuery;
   // const params = convertParamsToObject(qwuery);
-  console.log(event);
   // try {
   //   switch (httpMethod) {
   //     case 'GET':
@@ -55,6 +54,6 @@ exports.handler = async function (event: HandlerEvent, context: HandlerContext):
   // }
    return {
     statusCode: 200,
-    body: JSON.stringify({ message: 'ok' })
+    body: JSON.stringify({ message: event })
    }
 };
