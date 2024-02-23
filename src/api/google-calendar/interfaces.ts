@@ -15,6 +15,6 @@ export interface CalendarCallsBodyPayload {
 export interface CalendarCallsBody {
   operation: string;
   getEventsOPtions?: GetEventsOptions;
-  payload: CalendarCallsBodyPayload;
+  payload?: CalendarCallsBodyPayload;
   calendarId?: string;
 }

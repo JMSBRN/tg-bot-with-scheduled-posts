@@ -21,19 +21,19 @@ exports.handler = async function (event: HandlerEvent, context: HandlerContext):
           body: JSON.stringify(events)
         };
       case 'deleteEvent':
-        const deleteRes = await deleteEvent(payload.eventId!, calId);
+        const deleteRes = await deleteEvent(payload?.eventId!, calId);
         return {
           statusCode: 200,
           body: JSON.stringify(deleteRes)
         };
       case 'insertEvent':
-        const insertedEvent = await insertEvent(payload.event!, calId);
+        const insertedEvent = await insertEvent(payload?.event!, calId);
         return {
           statusCode: 200,
           body: JSON.stringify(insertedEvent)
         };
       case 'updateEvent':
-        const updatedEvent = await updateEvent(payload.eventId!, payload.updatedEvent!, calId, payload.options);
+        const updatedEvent = await updateEvent(payload?.eventId!, payload?.updatedEvent!, calId, payload?.options);
         return {
           statusCode: 200,
           body: JSON.stringify(updatedEvent)
