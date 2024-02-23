@@ -10,8 +10,9 @@ const getCalendar = async (): Promise<calendar_v3.Calendar> => {
 };
 
 
-const getEvents = async (options: GetEventsOptions | undefined, calendarId: string ='primary'): Promise<calendar_v3.Schema$Event[] | undefined> => {
+const getEvents = async (options: GetEventsOptions | undefined): Promise<calendar_v3.Schema$Event[] | undefined> => {
     const {
+        calendarId = 'primary',
         maxResults = 1000,
         daysBefore = 0,
         daysAfter = 365
@@ -94,6 +95,8 @@ const updateEvent = async (eventId: string, event: Partial<calendar_v3.Schema$Ev
         paramsObject.daysBefore = Number(value);
       } else if (key === 'daysAfter') {
         paramsObject.daysAfter = Number(value);
+      } else if (key === 'calendarId') {
+        paramsObject.calendarId = String(value);
       } else {
         errorMessage += `Unknown parameter: ${key}`;
       }

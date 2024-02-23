@@ -17,7 +17,7 @@ exports.handler = async function (event: HandlerEvent, context: HandlerContext):
             body: JSON.stringify(params)
           };
       }
-        const events = await getEvents(params, calId);
+        const events = await getEvents(params);
         return {
           statusCode: 200,
           body: JSON.stringify(events)
