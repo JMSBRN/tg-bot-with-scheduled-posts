@@ -19,14 +19,14 @@
 
 
 async function fetchCalendarData() {
-    try {
-      const url = 'https://jmsbrn-tg-bot.netlify.app/.netlify/functions/calendar?calendarId=zakhavai@gmail.com&daysBefore=0&daysAfter=1000&maxResults=100';
-      const response = await fetch(url);
-      const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.error('Error fetching calendar data:', error);
-    }
+  try {
+    const url = 'https://jmsbrn-tg-bot.netlify.app/.netlify/functions/calendar?calendarId=zakhavai@gmail.com&daysBefore=0&daysAfter=1000&maxResults=100';
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error('Error fetching calendar data:', error);
   }
-  
-  fetchCalendarData();
+}
+
+fetchCalendarData();
