@@ -10,12 +10,12 @@ const getCalendar = async (): Promise<calendar_v3.Calendar> => {
 };
 
 
-const getEvents = async (options: GetEventsOptions = {}, calendarId: string ='primary'): Promise<calendar_v3.Schema$Event[] | undefined> => {
+const getEvents = async (options: GetEventsOptions | undefined, calendarId: string ='primary'): Promise<calendar_v3.Schema$Event[] | undefined> => {
     const {
         maxResults = 1000,
         daysBefore = 0,
         daysAfter = 365
-    } = options;
+    } = options || {};
 
     const calendar: calendar_v3.Calendar = await getCalendar();
     const currentTime: number = new Date().getTime();
