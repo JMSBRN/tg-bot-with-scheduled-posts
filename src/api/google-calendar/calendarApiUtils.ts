@@ -2,17 +2,7 @@ import {Auth, calendar_v3, google } from "googleapis";
 import { getAuthenticatedClient } from "../auth/auth";
 import { MethodOptions } from "googleapis/build/src/apis/calendar";
 import { GetEventsOptions } from "./interfaces";
-
-function convertParamsToObject(url: string): { [key: string]: number } {
-    const searchParams = new URLSearchParams(url);
-    const paramsObject: { [key: string]: number } = {};
   
-    for (const [key, value] of searchParams.entries()) {
-      paramsObject[key] = Number(value);
-    }
-  
-    return paramsObject;
-  }
 
 const getCalendar = async (): Promise<calendar_v3.Calendar> => {
     const authenticatedClient = (await getAuthenticatedClient()) as Auth.OAuth2Client;
@@ -20,11 +10,12 @@ const getCalendar = async (): Promise<calendar_v3.Calendar> => {
 };
 
 
-const getEvents = async (options: URLSearchParams | undefined, calendarId: string ='primary'): Promise<calendar_v3.Schema$Event[] | undefined> => {
-    let { maxResults, daysBefore, daysAfter } = convertParamsToObject(options!.toString());
-    maxResults=100;
-    daysBefore=0;
-    daysAfter=1000;
+const getEvents = async (options: GetEventsOptions | undefined, calendarId: string ='primary'): Promise<calendar_v3.Schema$Event[] | undefined> => {
+    const {
+        maxResults = 1000,
+        daysBefore = 0,
+        daysAfter = 365
+    } = options || {} as GetEventsOptions;
 
     const calendar: calendar_v3.Calendar = await getCalendar();
     const currentTime: number = new Date().getTime();
@@ -91,10 +82,35 @@ const updateEvent = async (eventId: string, event: Partial<calendar_v3.Schema$Ev
     }
 };
 
+ const  convertParamsToObject = (url: string): { error: string } | Partial<GetEventsOptions> => {
+    const searchParams = new URLSearchParams(url);
+    const paramsObject: Partial<GetEventsOptions> = {};
+    let errorMessage = '';
+  
+    for (const [key, value] of searchParams.entries()) {
+      if (key === 'maxResults') {
+        paramsObject.maxResults = Number(value);
+      } else if (key === 'daysBefore') {
+        paramsObject.daysBefore = Number(value);
+      } else if (key === 'daysAfter') {
+        paramsObject.daysAfter = Number(value);
+      } else {
+        errorMessage += `Unknown parameter: ${key}`;
+      }
+    }
+  
+    if (errorMessage) {
+      return { error: errorMessage };
+    }
+  
+    return paramsObject;
+  }
+
 export {
     getCalendar,
     getEvents,
     deleteEvent,
     insertEvent,
-    updateEvent
+    updateEvent,
+    convertParamsToObject
 }
