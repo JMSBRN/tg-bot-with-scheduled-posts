@@ -34,3 +34,7 @@ const cronVariants = [
     // Add more variants as needed
 ];
 ```
+```
+  alternative ts-node:  tsx 
+```
+
