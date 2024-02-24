@@ -1,9 +1,23 @@
-import { HandlerContext, HandlerEvent, HandlerResponse } from '@netlify/functions';
-import { convertParamsToObject, deleteEvent, getEvents, insertEvent, updateEvent } from '../../src/api/google-calendar/calendarApiUtils';
-import { CalendarCallsBody } from '../../src/api/google-calendar/interfaces';
+import {
+  HandlerContext,
+  HandlerEvent,
+  HandlerResponse,
+} from '@netlify/functions';
+import {
+  convertParamsToObject,
+  deleteEvent,
+  getEvents,
+  insertEvent,
+  updateEvent,
+} from '../google-calendar/calendarApiUtils';
+import { CalendarCallsBody } from '../google-calendar/interfaces';
 
+// tested with fetch only GET method
 
-export async function handler(event: HandlerEvent, context: HandlerContext): Promise<{ statusCode: number, body: string }> {
+export async function calendarHandler(
+  event: HandlerEvent,
+  context: HandlerContext,
+): Promise<{ statusCode: number; body: string }> {
   const httpMethod = event.httpMethod;
   let params: { [key: string]: string | number } = {};
   if (httpMethod === 'GET') {
@@ -12,13 +26,13 @@ export async function handler(event: HandlerEvent, context: HandlerContext): Pro
     if ('error' in params) {
       return {
         statusCode: 400,
-        body: JSON.stringify(params)
+        body: JSON.stringify(params),
       };
     }
     const events = await getEvents(params);
     return {
       statusCode: 200,
-      body: JSON.stringify(events)
+      body: JSON.stringify(events),
     };
   }
   const body = JSON.parse(event.body!);
@@ -29,24 +43,29 @@ export async function handler(event: HandlerEvent, context: HandlerContext): Pro
       const deleteRes = await deleteEvent(body.eventId!, calId);
       return {
         statusCode: 204,
-        body: ''
+        body: '',
       };
     case 'POST':
       const insertedEvent = await insertEvent(body.event!, calId);
       return {
         statusCode: 201,
-        body: JSON.stringify(insertedEvent)
+        body: JSON.stringify(insertedEvent),
       };
     case 'PUT':
-      const updatedEvent = await updateEvent(body.eventId!, body.updatedEvent!, calId, body.options);
+      const updatedEvent = await updateEvent(
+        body.eventId!,
+        body.updatedEvent!,
+        calId,
+        body.options,
+      );
       return {
         statusCode: 200,
-        body: JSON.stringify(updatedEvent)
+        body: JSON.stringify(updatedEvent),
       };
     default:
       return {
         statusCode: 405,
-        body: 'Invalid method'
+        body: 'Invalid method',
       };
   }
 }
