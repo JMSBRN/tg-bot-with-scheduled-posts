@@ -9,6 +9,6 @@ export interface CalendarEventForBot {
   }
 
   export type FilteredEvents = {
-    withAllDayTime: CalendarEventForBot[];
+    withDay: CalendarEventForBot[];
     withHours: CalendarEventForBot[];
   }

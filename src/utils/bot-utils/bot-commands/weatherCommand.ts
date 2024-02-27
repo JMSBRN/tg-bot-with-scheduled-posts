@@ -1,5 +1,8 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { TelegramMessage } from '../../../interfaces/botInterfacses';
+import { getEventsForBot } from '../scheduled-posts/sendCalendarPosts';
+import { FilteredEvents } from '../scheduled-posts/inrerfaces';
+import { CronJob } from 'cron';
 
 const sendWeatherInfo = async (bot: TelegramBot, chatId: number) => {
     await bot.sendMessage(chatId, '🏝️✈️🍹☀️🏖️', {
@@ -17,7 +20,7 @@ const sendWeatherInfo = async (bot: TelegramBot, chatId: number) => {
     });
   };
   
-  const sendWeatherCommandInfo = async (bot: TelegramBot, chatId: number) => {
+  const sendWeatherCommAndInfo = async (bot: TelegramBot, chatId: number) => {
     const htmlContent = `
       <blockquote>
         Or you can choose your city\n
@@ -31,13 +34,15 @@ const sendWeatherInfo = async (bot: TelegramBot, chatId: number) => {
     });
   };
   
+
   export const handleWeatherCommand = async (bot: TelegramBot, msg: TelegramMessage) => {
     try {
       const chatId = msg.message.chat.id;
-  
+      
       await sendWeatherInfo(bot, chatId);
-      await sendWeatherCommandInfo(bot, chatId);
+      await sendWeatherCommAndInfo(bot, chatId);
     } catch (error) {
       console.error('Error handling weather command:', (error as Error).message);
     }
   };
+

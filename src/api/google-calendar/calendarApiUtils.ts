@@ -10,7 +10,7 @@ const getCalendar = async (): Promise<calendar_v3.Calendar> => {
 };
 
 
-const getEvents = async (options: GetEventsOptions | undefined): Promise<calendar_v3.Schema$Event[] | undefined> => {
+const getEvents = async (options?: GetEventsOptions): Promise<calendar_v3.Schema$Event[] | undefined> => {
     const {
         calendarId = 'primary',
         maxResults = 1000,
