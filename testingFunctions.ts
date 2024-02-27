@@ -61,66 +61,35 @@ const checkEventsWithSchedule = new CronJob(
 
 //checkEventsWithSchedule.start();
 
-const start = { date: '2024-01-20' };
-
-// Get the current date
-const currentDate = new Date();
-const formattedCurrentDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
-
-if (start.date === formattedCurrentDate) {
-  console.log('Today is January 20, 2024!');
-}
-
-function getFormatedCurrentDateWithAllDay() {
-  const currentDate = new Date();
-  const formattedCurrentDate = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')}`;
-  return formattedCurrentDate;
-}
 
 
-function checkFormatedCurrentDateWithHour(start: DateTime): boolean {
-  if (!start || !start.dateTime) {
+
+
+function compareDateFromStartByDay(start:{ date: string }) {
+  const currentDay = new Date().setUTCHours(0, 0, 0, 0);
+  if (!start?.date) {
     return false;
   }
-
-  const now = new Date();
-
-  const nowtTime = now.getHours();
-  const startTime = new Date(start.dateTime).getHours();
-  console.log(nowtTime);
-  console.log(startTime);
+    const startDay = new Date(start.date as string).setUTCHours(0, 0, 0, 0);
+    return startDay === currentDay
   
-  return true;
 }
 
-function chekDateFromStart(start:DateTime) {
- const  { date, dateTime } = start!;
-  if (date === getFormatedCurrentDateWithAllDay()) {
-    return true;
+function compareDateFromStartByHour(start: { dateTime: string }): boolean {
+  const now = new Date();
+  const currentHour = now.setHours(now.getHours(), 0, 0, 0);
+
+  if (!start?.dateTime) {
+    return false;
   }
-  return false;
+  const startDate = new Date(start.dateTime.slice(0, -5)); // remove time zone
+  const startHour = startDate.setHours(startDate.getHours(), 0, 0, 0);
+ 
+  return currentHour === startHour;
 }
 async function main() {
-  // const { withAllDayTime, withHours } = await getEventsForBot() as FilteredEvents;
-  // if(withAllDayTime.length) {
-  //   withAllDayTime.forEach((event) => {
-  //     if(chekDateFromStart(event.start)) {
-  //       console.log(event.text);
-  //     }
-  //   })
-  // }
 
-  // if(withHours.length) {
-  //   withHours.forEach((event) => {
-  //     if(checkFormatedCurrentDateWithHour(event.start)) {
-  //       console.log(event.text);
-  //     }
-  //   })
-  // }
-
-  //================
-
-  checkFormatedCurrentDateWithHour({ dateTime: '2024-02-26T23:31:48' });
+  
 }
 
 main();
