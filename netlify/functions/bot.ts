@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 import TelegramBot from 'node-telegram-bot-api';
 import type { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
-import { handleBotCommands } from '../../src/utils/bot-utils/botUtils';
+import { handleBotCommands } from '../../src/utils/bot-utils/bot-utils/botUtils';
 import { TelegramMessage } from '../../src/interfaces/botInterfacses';
 import { sendMessagesFromCalendarToTelegram, sendPostsBySchedule } from '../../src/utils/bot-utils/scheduled-posts/sendCalendarPosts';
 

@@ -1,5 +1,4 @@
 import schedule from 'node-schedule';
-import { getEvents } from './src/api/google-calendar/calendarApiUtils';
 import { config } from 'dotenv';
 import { calendar_v3 } from 'googleapis';
 
@@ -47,15 +46,12 @@ function scheduleJobForEventWithAllDay(
   // start in midnight ??
 }
 
-function scheduleJobsForEvents(events: calendar_v3.Schema$Event[]) {
+function scheduleJobsForEvents(events: calendar_v3.Schema$Event[], optionsForAllDay?: ExecuteDayTime) {
   const currentDate = new Date();
   console.log(currentDate);
   events.forEach((event) => {
     if (event.start?.date) {
-      scheduleJobForEventWithAllDay(event.start.date, {
-        hour: 20,
-        minute: 20,
-      });
+      scheduleJobForEventWithAllDay(event.start.date, optionsForAllDay);
     }
     if (event.start?.dateTime) {
       const eventDateTime = new Date(event.start.dateTime);
@@ -67,15 +63,10 @@ function scheduleJobsForEvents(events: calendar_v3.Schema$Event[]) {
   });
 }
 
+ export {
+    scheduleJobForEventWithAllDay,
+    scheduleJobForEventWithTimeInDay,
+    scheduleJobsForEvents
+ }
 
-async function main() {
-  const events = await getEvents({
-    calendarId: process.env.CALENDAR_ID,
-  });
 
-  if (Array.isArray(events) && events.length) {
-    scheduleJobsForEvents(events);
-  }
-}
-
-main();

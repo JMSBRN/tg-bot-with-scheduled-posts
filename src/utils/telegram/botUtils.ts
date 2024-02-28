@@ -1,9 +1,9 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { TelegramMessage } from '../../interfaces/botInterfacses';
-import { handleStartCommand } from './bot-commands/startCommand';
-import { handleHelpCommand } from './bot-commands/helpCommand';
-import { handleWeatherCommand } from './bot-commands/weatherCommand';
-import { handleCalendarCommand } from './bot-commands/calendarComand';
+import { TelegramMessage } from '../../../interfaces/botInterfacses';
+import { handleStartCommand } from './startCommand';
+import { handleHelpCommand } from './helpCommand';
+import { handleWeatherCommand } from './weatherCommand';
+import { handleCalendarCommand } from './calendarComand';
 
 export const handleBotCommands = async (text: string, bot:TelegramBot, msg:TelegramMessage) => {
   const regExpWeatherCommand: RegExp = /\/weather/i;
