@@ -1,8 +1,8 @@
 import TelegramBot from 'node-telegram-bot-api';
 import { CronJob } from 'cron';
-import { getEvents } from '../../../api/google-calendar/calendarApiUtils';
-import { GetEventsOptions } from '../../../api/google-calendar/interfaces';
 import { CalendarEventForBot, DateTime, FilteredEvents } from './inrerfaces';
+import { getEvents } from '../../api/google-calendar/calendarApiUtils';
+import { GetEventsOptions } from '../../api/google-calendar/interfaces';
 
 export const sendPostsBySchedule = async (bot: TelegramBot, chatId: number) => {
   await bot.sendMessage(chatId, 'test from sendPostsBySchedule');

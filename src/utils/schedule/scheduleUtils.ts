@@ -1,6 +1,8 @@
 import schedule from 'node-schedule';
 import { config } from 'dotenv';
 import { calendar_v3 } from 'googleapis';
+import { ResponsForSendMessageWithFetch, SendTelegramMessageOptions } from '../telegram/interfaces';
+import { sendTelegramMessageWithFetch } from '../telegram/botUtils';
 
 config();
 
@@ -21,29 +23,31 @@ function createRecurrenceRule(startDate: Date, options?: ExecuteDayTime) {
   rule.second = seconds || startDate.getSeconds();
   return rule;
 }
-function scheduleJobForEventWithTimeInDay(eventStartTime: Date) {
+
+function scheduleJobForEventWithTimeInDay(eventStartTime: Date, fetchFunction?: Promise<ResponsForSendMessageWithFetch>) {
   const rule = createRecurrenceRule(eventStartTime);
-  const job = schedule.scheduleJob(rule, () => {
-    console.log(
-      'Job from scheduleJobForEventWithTimeInDay executed at',
-      new Date(),
-    );
+  const job = schedule.scheduleJob(rule, async function () {
+     if (fetchFunction) {
+      await fetchFunction;
+      job.cancel();
+     }
     job.cancel();
   });
 }
 
 function scheduleJobForEventWithAllDay(
   startDateStr: string,
-  options?: ExecuteDayTime,
+  options?: ExecuteDayTime
 ) {
   const startDate = new Date(startDateStr);
   const rule = createRecurrenceRule(startDate, options);
-  const job = schedule.scheduleJob(rule, () => {
-    console.log(
-      'Job from scheduleJobForEventWithAllDay executed at',
-      new Date(),
-    );
-    job.cancel();
+  const job = schedule.scheduleJob(rule, async function () {
+         const res = await sendTelegramMessageWithFetch({
+           chat_id: process.env.TELEGRAM_CHAT_ID!,
+           text: 'Today is recognized by Rebecca Black!',
+           bot_token: process.env.TELEGRAM_BOT_TOKEN!,
+         });
+       job.cancel();
   });
   // start in midnight ??
 }
@@ -53,6 +57,11 @@ function scheduleJobsForEvents(
   optionsForAllDay?: ExecuteDayTime,
 ) {
   const currentDate = new Date();
+  const options: SendTelegramMessageOptions = {
+    chat_id: process.env.TELEGRAM_CHAT_ID!,
+    text: 'Today is recognized by Rebecca Black!',
+    bot_token: process.env.TELEGRAM_BOT_TOKEN!,
+  }
   events.forEach((event) => {
     if (event.start?.date) {
       scheduleJobForEventWithAllDay(event.start.date, optionsForAllDay);
@@ -62,7 +71,7 @@ function scheduleJobsForEvents(
       if (eventDateTime < currentDate) {
         return;
       }
-      scheduleJobForEventWithTimeInDay(eventDateTime);
+      scheduleJobForEventWithTimeInDay(eventDateTime, sendTelegramMessageWithFetch(options));
     }
   });
 }

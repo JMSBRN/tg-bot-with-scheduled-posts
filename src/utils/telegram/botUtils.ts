@@ -1,9 +1,11 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { TelegramMessage } from '../../../interfaces/botInterfacses';
 import { handleStartCommand } from './startCommand';
 import { handleHelpCommand } from './helpCommand';
 import { handleWeatherCommand } from './weatherCommand';
 import { handleCalendarCommand } from './calendarComand';
+import { TelegramMessage } from '../../interfaces/botInterfacses';
+import { ResponsForSendMessageWithFetch, SendTelegramMessageOptions } from './interfaces';
+import schedule from 'node-schedule';
 
 export const handleBotCommands = async (text: string, bot:TelegramBot, msg:TelegramMessage) => {
   const regExpWeatherCommand: RegExp = /\/weather/i;
@@ -22,5 +24,29 @@ export const handleBotCommands = async (text: string, bot:TelegramBot, msg:Teleg
   } else {
     return 'Unknown command';
   }
+   // refactor ??
 };
 
+
+export async function sendTelegramMessageWithFetch (options: SendTelegramMessageOptions): Promise<ResponsForSendMessageWithFetch> {
+  const { chat_id, text, bot_token } = options;
+  try {
+    const response = await fetch('https://api.telegram.org/bot' + bot_token + '/sendMessage', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chat_id,
+        text,
+      })  
+    });
+    if (!response.ok) {
+      throw new Error('Failed to send message');
+    }
+    return  { ok: response.ok };
+  } catch (error) {
+    console.error('Error sending message:', error);
+    throw error;
+  }
+}
