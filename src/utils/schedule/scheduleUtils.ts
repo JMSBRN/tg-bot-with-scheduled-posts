@@ -11,24 +11,23 @@ interface ExecuteDayTime {
 }
 
 function createRecurrenceRule(startDate: Date, options?: ExecuteDayTime) {
-  const {
-    hour = 0,
-    minute = 0,
-    seconds = 0,
-  } = options || ({} as ExecuteDayTime);
+  const { hour, minute, seconds } = options || {};
   const rule = new schedule.RecurrenceRule();
   rule.year = startDate.getFullYear();
   rule.month = startDate.getMonth();
   rule.date = startDate.getDate();
-  rule.hour = hour;
-  rule.minute = minute;
-  rule.second = seconds;
+  rule.hour = hour || startDate.getHours();
+  rule.minute = minute || startDate.getMinutes();
+  rule.second = seconds || startDate.getSeconds();
   return rule;
 }
 function scheduleJobForEventWithTimeInDay(eventStartTime: Date) {
   const rule = createRecurrenceRule(eventStartTime);
   const job = schedule.scheduleJob(rule, () => {
-    console.log('Job from scheduleJobForEventWithTimeInDay executed at', new Date());
+    console.log(
+      'Job from scheduleJobForEventWithTimeInDay executed at',
+      new Date(),
+    );
     job.cancel();
   });
 }
@@ -40,15 +39,20 @@ function scheduleJobForEventWithAllDay(
   const startDate = new Date(startDateStr);
   const rule = createRecurrenceRule(startDate, options);
   const job = schedule.scheduleJob(rule, () => {
-    console.log('Job from scheduleJobForEventWithAllDay executed at', new Date());
+    console.log(
+      'Job from scheduleJobForEventWithAllDay executed at',
+      new Date(),
+    );
     job.cancel();
   });
   // start in midnight ??
 }
 
-function scheduleJobsForEvents(events: calendar_v3.Schema$Event[], optionsForAllDay?: ExecuteDayTime) {
+function scheduleJobsForEvents(
+  events: calendar_v3.Schema$Event[],
+  optionsForAllDay?: ExecuteDayTime,
+) {
   const currentDate = new Date();
-  console.log(currentDate);
   events.forEach((event) => {
     if (event.start?.date) {
       scheduleJobForEventWithAllDay(event.start.date, optionsForAllDay);
@@ -63,10 +67,8 @@ function scheduleJobsForEvents(events: calendar_v3.Schema$Event[], optionsForAll
   });
 }
 
- export {
-    scheduleJobForEventWithAllDay,
-    scheduleJobForEventWithTimeInDay,
-    scheduleJobsForEvents
- }
-
-
+export {
+  scheduleJobForEventWithAllDay,
+  scheduleJobForEventWithTimeInDay,
+  scheduleJobsForEvents,
+};
