@@ -8,7 +8,7 @@ const handler: Handler = async (
   try {
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Success', towns: realtyJson }),
+      body: JSON.stringify({ message: 'Success', realty: realtyJson }),
     };
   } catch (error) {
     console.error('Error:', error);
