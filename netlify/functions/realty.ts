@@ -8,6 +8,12 @@ const handler: Handler = async (
   try {
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': 'http://localhost:5173', 
+        'Access-Control-Allow-Methods': 'GET',
+      },
+      
       body: JSON.stringify({ message: 'Success', realty: realtyJson }),
     };
   } catch (error) {
