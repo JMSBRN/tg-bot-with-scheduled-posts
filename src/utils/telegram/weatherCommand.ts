@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { TelegramMessage } from '../../interfaces/botInterfacses';
+import { TelegramMessage } from '../../interfaces/botInterfaces';
 
 const sendWeatherInfo = async (bot: TelegramBot, chatId: number) => {
     await bot.sendMessage(chatId, '🏝️✈️🍹☀️🏖️', {

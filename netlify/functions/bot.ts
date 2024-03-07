@@ -1,6 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
 import type { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
-import { TelegramMessage } from '../../src/interfaces/botInterfacses';
+import { TelegramMessage } from '../../src/interfaces/botInterfaces';
 import { handleBotCommands } from '../../src/utils/telegram/botUtils';
 import { config } from 'dotenv';
 

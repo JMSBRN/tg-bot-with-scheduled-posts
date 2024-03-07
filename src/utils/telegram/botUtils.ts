@@ -3,7 +3,7 @@ import { handleStartCommand } from './startCommand';
 import { handleHelpCommand } from './helpCommand';
 import { handleWeatherCommand } from './weatherCommand';
 import { handleCalendarCommand } from './calendarComand';
-import { TelegramMessage } from '../../interfaces/botInterfacses';
+import { TelegramMessage } from '../../interfaces/botInterfaces';
 import { ResponsForSendMessageWithFetch, SendTelegramMessageOptions } from './interfaces';
 import schedule from 'node-schedule';
 

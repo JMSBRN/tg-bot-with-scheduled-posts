@@ -1,7 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import { FilteredEvents } from "../scheduled-posts/inrerfaces";
 import { getEventsForBot } from "../scheduled-posts/sendCalendarPosts";
-import { TelegramMessage } from "../../interfaces/botInterfacses";
+import { TelegramMessage } from "../../interfaces/botInterfaces";
 
  export const  handleCalendarCommand = async (bot: TelegramBot, msg: TelegramMessage) => {
    const chatId = msg.message.chat.id;

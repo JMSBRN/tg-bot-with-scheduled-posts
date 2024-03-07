@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { TelegramMessage } from '../../../interfaces/botInterfacses';
+import { TelegramMessage } from '../../interfaces/botInterfaces';
 
 const START_MENU_URL = 'https://jmsbrn-tg-bot.netlify.app/';
 
